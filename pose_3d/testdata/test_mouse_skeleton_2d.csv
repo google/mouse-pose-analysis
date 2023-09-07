@@ -1,0 +1,21 @@
+# An exmple projected mouse 2D keypoints file.
+# format: joint_name, joint_id, joint_pos_x, joint_pos_y
+# This is to test the joint angle optimization.
+spine_shoulder,0,600.805662,283.303972
+spine_mid,1,559.481714,319.431157
+spine_hip,2,506.313969,364.175943
+left_hip,3,495.718484,350.562805
+left_knee,4,489.753515,324.948010
+left_hind_paw,5,459.508833,365.526023
+right_Hip,6,516.864830,376.591290
+right_knee,7,536.127691,389.293288
+right_hind_paw,8,491.801687,408.010294
+root_tail,9,475.195305,390.139471
+neck,10,618.711963,268.292324
+head,11,651.067369,239.948812
+left_shoulder,12,599.117516,261.095108
+left_elbow,13,585.924922,249.619507
+left_fore_paw,14,616.849425,225.156568
+right_shoulder,15,621.251647,288.197896
+right_elbow,16,623.722895,310.410980
+right_fore_paw,17,649.736248,283.170134

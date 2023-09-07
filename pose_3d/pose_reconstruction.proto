@@ -1,0 +1,143 @@
+// Copyright 2023 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package mouse_pose.optical_mouse;
+
+import "mouse_pose_analysis/pose_3d/keypoint.proto";
+
+message CameraParameters {
+  // A 3x3 matrix in row-major order of the camera intrinsics.
+  repeated float intrinsics = 1;
+
+  // A 3-vector of axis-angle representation of the camera rotation.
+  repeated float rotation = 2;
+
+  // A 3-vector of the camera translation.
+  repeated float translation = 3;
+
+  // Lens distortion, following OpenCV's convention.
+  repeated float distortion = 4;
+
+  // Name of the camera.
+  string name = 5;
+}
+
+message CameraArray {
+  repeated CameraParameters camera = 1;
+}
+
+enum OptimizationMethod {
+  DEFAULT = 0;
+  JOINT_ANGLE = 1;
+  JOINT_ANGLE_PCA = 2;
+  JOINT_ANGLE_POSE_PRIOR_AND_RIGID_FIT = 3;
+  JOINT_ANGLE_POSE_PRIOR_SHAPE_BASIS_AND_RIGID_FIT = 4;
+  POSE_SHAPE = 5;
+  JOINT_ANGLE_AND_RIGID_FIT = 6;
+  RIGID_FIT = 7;
+  NONE = 8;
+}
+
+message IntervalConstraint {
+  float lower_bound = 1;
+  float upper_bound = 2;
+}
+
+message OptimizationIntervalConstraints {
+  repeated IntervalConstraint translation = 1;
+  repeated IntervalConstraint rotation = 2;
+  repeated IntervalConstraint joint_angles = 3;
+}
+
+message OptimizationOptions {
+  int32 num_threads = 1;
+  int32 max_num_iterations = 2;
+  bool minimizer_progress_to_stdout = 3;
+
+  // For ceres, it's "silent" or "per_minimizer_iteration".
+  // See third_party/ceres/include/ceres/types.h.
+  string logging_type = 4;
+
+  // For ceres, it's "levenberg_marquardt" or "dogleg".
+  string trust_region_strategy_type = 5;
+
+  float initial_trust_region_radius = 6;
+}
+
+message InputParameters {
+  // Camera parameters used to project 3D joints to 2D image.
+  CameraParameters camera_parameters = 1;
+
+  // Path to the configuration of a kinematic chain.
+  string skeleton_config_file = 2;
+
+  // Optimization method to use.
+  OptimizationMethod method = 3;
+
+  // Weight to pose prior.
+  float pose_prior_weight = 4;
+
+  // Weight to shape prior.
+  float shape_prior_weight = 5;
+
+  // Path to a mesh file.
+  string mesh_file = 6;
+
+  // Path to the file containing weights from joints to vertices.
+  string vertex_weight_file = 7;
+
+  // 2D mask file when fitting the contour to the projected mesh.
+  string mask_file = 8;
+
+  //  The csv of the mean followed by PCA coeffiecients for alpha angles.
+  //  See create_pose_basis.py or pose_optimzer_tests for more details.
+  string pose_pca_file = 9;
+
+  // GMM coeffiecients for pose.
+  string gmm_file = 10;
+
+  // PCA basis of shape space.
+  string shape_basis_file = 11;
+
+  // Optimization constraints.
+  OptimizationIntervalConstraints optimization_constraints = 12;
+
+  // Optimization options.
+  OptimizationOptions optimization_options = 13;
+
+  // Optional initial values for the global rigid body optimization.
+  // This is a 6-vector of rotation and translation, in that order.
+  repeated float initial_rigid_body_values = 14;
+
+  // Optional value to use the Ceres rigid fit rather than the OpenCV one.
+  // The Ceres rigid fit should do a better job obeying constraints but may be
+  // more likely to get stuck in local minima.
+  bool prefer_ceres_rigid_fit_to_open_cv = 15;
+}
+
+message ReconstructionOutput {
+  // Where the source data of the reconstruction.
+  ImageSource source = 1;
+
+  // Fitted camera parameters, in particular a global rigid-body transformation.
+  CameraParameters camera_output = 2;
+
+  // Reconstructed joints.
+  BodyJoints joints = 3;
+
+  // Visualizations.
+  repeated Image output_images = 4;
+}

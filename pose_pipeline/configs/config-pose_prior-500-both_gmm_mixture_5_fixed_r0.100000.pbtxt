@@ -1,0 +1,45 @@
+optimization_options {
+  # minimizer_progress_to_stdout: true
+  # logging_type: "per_minimizer_iteration"
+  max_num_iterations: 100
+}
+camera_parameters {
+  intrinsics: [411.15, 0, 443.0, 0, 410.0, 332.24, 0, 0, 1]
+}
+skeleton_config_file: "mouse_pose_analysis/pose_3d/testdata/bone_config_world_standardized.csv"
+method: JOINT_ANGLE_POSE_PRIOR_AND_RIGID_FIT
+pose_prior_weight: 500.0
+shape_prior_weight: 10.0
+mesh_file: "mouse_pose_analysis/pose_pipeline/testdata/simplified_skin_yf_zu.obj"
+vertex_weight_file: "mouse_pose_analysis/pose_3d/testdata/vertex_weights_simplified_skin.csv"
+mask_file: "mouse_pose_analysis/pose_3d/testdata/synthetic_mask_0611.png"
+pose_pca_file: "mouse_pose_analysis/pose_3d/testdata/pca_bone_config_world.csv"
+gmm_file: "mouse_pose_analysis/pose_pipeline/testdata/both_gmm_mixture_5_fixed_r0.100000.pbtxt"
+shape_basis_file: "mouse_pose_analysis/pose_3d/testdata/pca_bone_shape_config.csv"
+initial_rigid_body_values: [0., 0., 0., 0., 0., 4.]
+optimization_constraints {
+  translation {
+    lower_bound: -10.0
+    upper_bound: 10.0
+  }
+  translation {
+    lower_bound: -10.0
+    upper_bound: 10.0
+  }
+  translation {
+    lower_bound: 3.
+    upper_bound: 4.5
+  }
+  rotation {
+    lower_bound: -0.1
+    upper_bound: 0.1
+  }
+  rotation {
+    lower_bound: -0.1
+    upper_bound: 0.1
+  }
+  rotation {
+    lower_bound: -3.14144
+    upper_bound: 3.14144
+  }
+}

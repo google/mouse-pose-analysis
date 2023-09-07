@@ -1,0 +1,21 @@
+# An exmple mouse skeleton config file.
+# format: joint_name, joint_id, parent_joint_id, joint_pos_x, joint_pos_y, joint_pos_z
+# this is to test the joint angle optimization.
+spine_shoulder,0,0,0.183547,0.346720,0.104557
+spine_mid,1,0,0.180768,0.541853,0.182301
+spine_hip,2,1,0.177417,0.777141,0.127423
+left_hip,3,2,0.236453,0.775478,0.127423
+left_knee,4,3,0.317523,0.734320,0.058969
+left_hind_paw,5,4,0.275616,0.906139,0.040721
+right_hip,6,2,0.121707,0.776310,0.127423
+right_knee,7,6,0.041052,0.752197,0.040721
+right_hind_paw,8,7,0.089545,0.913240,0.040721
+root_tail,9,2,0.176219,0.916632,0.101680
+neck,10,0,0.184660,0.268567,0.128670
+head,11,10,0.186939,0.108522,0.060904
+left_shoulder,12,0,0.246407,0.301819,0.104557
+left_elbow,13,12,0.306275,0.304812,0.046974
+left_fore_paw,14,13,0.303281,0.164723,0.041546
+right_shoulder,15,0,0.125475,0.303016,0.104557
+right_elbow,16,15,0.057825,0.339536,0.046974
+right_fore_paw,17,16,0.072792,0.207229,0.043371

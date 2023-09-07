@@ -1,0 +1,10 @@
+# A simple skeleton on the same z axis plane.
+# format: joint_name, joint_id, parent_joint_id, joint_pos_x, joint_pos_y, joint_pose_z
+# Connection  point_0 - point_4 - point_2 - point_3
+#                         \
+#                       point_1
+root, 0, 0, 0., 0., 0.
+joint_1, 1, 4, -1., 2., 0.
+joint_2, 2, 4, 1., 2., 0.
+joint_3, 3, 2, 2., 3., 0.
+joint_4, 4, 0, 0., 1, 0.

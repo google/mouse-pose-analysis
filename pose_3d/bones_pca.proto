@@ -1,0 +1,44 @@
+// Copyright 2023 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto2";
+
+package research.vision.mouse_pose.optical_mouse;
+
+// Stores the parameters of the Bones PCA.
+message BonesPCAProto {
+  // The number of components in the model. This is part of the expected
+  // dimensionality of the data: C.
+  optional int32 number_of_components = 1;
+
+  // This is the data dimensionality in the model. Each observation is expected
+  // to have this many values: D. Relates to number of bones.
+  optional int32 number_of_dimensions = 2;
+
+  // This is the keys used to create the bone_lengths. Reshape to (D+1, 2)
+  repeated int32 bones_keys = 3 [packed = true];
+
+  // Mean values of each bone length after normalization. Data fed to the PCA
+  // has a mean of zero.
+  // Any valid model should have D values in this field.
+  repeated float bones_means = 4 [packed = true];
+
+  // The means for each component.
+  // Any valid model should have D values in this field.
+  repeated float pca_means = 5 [packed = true];
+
+  // The precision matrix for each component.
+  // Any valid model should have C * D values in this field. Reshape to (C, D)
+  repeated float components_matrix = 6 [packed = true];
+}

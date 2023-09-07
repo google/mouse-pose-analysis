@@ -1,0 +1,101 @@
+node {
+  calculator: "OpenCvVideoDecoderCalculator"
+  input_side_packet: "INPUT_FILE_PATH:input_video_path"
+  output_stream: "VIDEO:input_video"
+  output_stream: "VIDEO_PRESTREAM:video_header"
+}
+
+node: {
+  calculator: "ImageTransformationCalculator"
+  input_stream: "IMAGE:input_video"
+  output_stream: "IMAGE:rgb_frames"
+  node_options: {
+    [type.googleapis.com/mediapipe.ImageTransformationCalculatorOptions] {
+    }
+  }
+}
+
+node {
+  calculator: "TfLiteImageInferenceCalculator"
+  input_stream: "IMAGE:rgb_frames"
+  output_stream: "TENSORS:detection_tensors"
+  node_options: {
+    [type.googleapis.com/mediapipe.TfLiteImageInferenceCalculatorOptions] {
+      model_path: "mouse_pose_analysis/models/pose_2d.tflite"
+      add_batch_dim: true
+    }
+  }
+}
+
+# Convert detection_tensors to keypoints
+node {
+  calculator: "DetectionToKeypointsCalculator"
+  input_stream: "TENSORS:detection_tensors"
+  input_stream: "IMAGE:rgb_frames"
+  output_stream: "KEYPOINTS:keypoints"
+  node_options: {
+    [type.googleapis.com/mediapipe.DetectionToKeypointsCalculatorOptions] {
+      keypoint_names: "NOSE,LEFT_EAR,RIGHT_EAR,LEFT_SHOULDER,RIGHT_SHOULDER,LEFT_FORE_PAW,RIGHT_FORE_PAW,LEFT_HIP,RIGHT_HIP,LEFT_HIND_PAW,RIGHT_HIND_PAW,ROOT_TAIL,SPINE_MID,SPINE_HIP,LEFT_KNEE,RIGHT_KNEE,LEFT_ELBOW,RIGHT_ELBOW,SPINE_SHOULDER,NECK"
+      tensor_detection_map {
+        key: "StatefulPartitionedCall:5"
+        value: "num_detections"
+      }
+      tensor_detection_map {
+        key: "StatefulPartitionedCall:1"
+        value: "classes"
+      }
+      tensor_detection_map {
+        key: "StatefulPartitionedCall:0"
+        value: "boxes"
+      }
+      tensor_detection_map {
+        key: "StatefulPartitionedCall:4"
+        value: "scores"
+      }
+      tensor_detection_map {
+        key: "StatefulPartitionedCall:3"
+        value: "keypoints"
+      }
+      tensor_detection_map {
+        key: "StatefulPartitionedCall:2"
+        value: "keypoint_scores"
+      }
+    }
+  }
+}
+
+node {
+  calculator: "KeypointsTo3DPoseShapeCalculator"
+  input_stream: "KEYPOINT_LOCATIONS_SET:keypoints"
+  input_stream: "IMAGE_FRAME:rgb_frames"
+  input_side_packet: "MESH_OUTPUT_DIR:mesh_output_dir"
+  output_stream: "RIGGED_MESH:rigged_mesh"
+  output_stream: "KEYPOINTS_VISUALIZATION:keypoints_visualization"
+  output_stream: "ROT_TRANS_ALPHA:rot_trans_alpha"
+  output_stream: "XYZ:xyz"
+  node_options: {
+    [type.googleapis.com/mediapipe.KeypointsTo3DPoseShapeCalculatorOptions] {
+      config_filename: "mouse_pose_analysis/pose_pipeline/configs/config-pose_prior-500-both_gmm_mixture_5_fixed_r0.100000.pbtxt"
+    }
+  }
+}
+
+node: {
+  calculator: "VideoPreStreamCalculator"
+  input_stream: "FRAME:keypoints_visualization"
+  input_stream: "VIDEO_PRESTREAM:video_header"
+  output_stream: "modified_video_header"
+}
+
+node {
+  calculator: "OpenCvVideoEncoderCalculator"
+  input_stream: "VIDEO:keypoints_visualization"
+  input_stream: "VIDEO_PRESTREAM:modified_video_header"
+  input_side_packet: "OUTPUT_FILE_PATH:output_video_path"
+  options: {
+    [mediapipe.OpenCvVideoEncoderCalculatorOptions.ext]: {
+      codec: "avc1"
+      video_format: "mp4"
+    }
+  }
+}

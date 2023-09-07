@@ -1,0 +1,73 @@
+// Copyright 2023 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package mouse_pose.optical_mouse;
+
+message KeyPoint {
+  // Name of the key point.
+  string name = 1;
+
+  // Key point position in an image. A 2-vector either in pixels or normalized
+  // coordinates.
+  repeated float position_2d = 2;
+
+  // Key point position in 3D. A 3-vector in some reference frame.
+  repeated float position_3d = 3;
+
+  // Error measurement, e.g., se, of the 3D position.
+  float error_3d = 4;
+
+  // key point weight. A float number indicate the weight of the keypoint in
+  // the optimization pipeline.
+  optional float weight = 5;
+}
+
+message ImageSource {
+  // The name of the study (e.g., EIF2b) or collection (e.g., run200126).
+  string study_name = 1;
+
+  // Path to the video file.
+  string video_file_name = 2;
+
+  // Identify which view this video is in a multiple-view set up.
+  int32 view = 3;
+
+  // Frame number.
+  int64 frame_number = 4;
+
+  // Time stamp in microseconds.
+  uint64 timestamp_microseconds = 5;
+}
+
+message Image {
+  // Where to find this image.
+  ImageSource source = 1;
+
+  int32 width = 2;
+  int32 height = 3;
+  bytes pixels = 4 [ctype = CORD];
+}
+
+message BodyJoints {
+  // A collection of key points define the body.
+  repeated KeyPoint key_points = 1;
+
+  // List of joint angles. Layout is specified by applications.
+  repeated float joint_angles = 2;
+
+  // Location and image data that the body joints correspond to.
+  Image image = 3;
+}
