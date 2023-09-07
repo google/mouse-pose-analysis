@@ -23,7 +23,7 @@ bazel test pose_3d:all
 
 - Test the pipeline.
 ```
-bazel test pose_pipeline:all
+bazel test pose_pipeline:2d_keypoints_to_3d_mesh_calculator_test
 ```
 
 ## 3D pose reconstruction
@@ -45,3 +45,12 @@ The directory `models` contains the model checkpoints for mouse detection and ke
 
 
 ## Troubleshooting
+* OpenCV complilation errors
+You get the error message similar to 
+```
+fatal error: opencv2/core/core.hpp: No such file or directory
+   28 | #include "opencv2/core/core.hpp"
+      |          ^~~~~~~~~~~~~~~~~~~~~~~
+```
+Edit `mediapipe/third_party/opencv_linux.BUILD` and uncomment the last entry in the `hdrs` and `includes` section.  Details see these [mediapipe](https://developers.google.com/mediapipe/framework/getting_started/install#installing_on_debian_and_ubuntu) directions. 
+
